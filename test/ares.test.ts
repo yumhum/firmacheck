@@ -29,4 +29,14 @@ describe('mapAresResponse', () => {
     const noDic = mapAresResponse({ ...fixture, dic: undefined })
     expect(noDic.dic).toBeNull()
   })
+
+  it('derives Zaniklý status from a terminated register entry', () => {
+    const terminated = mapAresResponse({ ...fixture, primarniZdroj: 'ros', seznamRegistraci: { stavZdrojeRos: 'ZANIKLY' } })
+    expect(terminated.status).toBe('Zaniklý')
+  })
+
+  it('returns Neznámý when register info is missing', () => {
+    const unknown = mapAresResponse({ ...fixture, primarniZdroj: undefined, seznamRegistraci: undefined })
+    expect(unknown.status).toBe('Neznámý')
+  })
 })

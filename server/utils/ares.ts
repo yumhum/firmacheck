@@ -13,7 +13,9 @@ export class AresNotFoundError extends Error {
 /** Derives a human status from the subject's primary register entry. */
 function deriveStatus(raw: any): string {
   const src = typeof raw.primarniZdroj === 'string' ? raw.primarniZdroj : ''
-  const key = src ? `stavZdroje${src.charAt(0).toUpperCase()}${src.slice(1)}` : ''
+  if (!src) return 'Neznámý'
+  // e.g. 'ros' → 'stavZdrojeRos'
+  const key = `stavZdroje${src.charAt(0).toUpperCase()}${src.slice(1)}`
   const value: string | undefined = raw.seznamRegistraci?.[key]
   if (value === 'AKTIVNI') return 'Aktivní'
   if (value === 'ZANIKLY') return 'Zaniklý'
@@ -52,8 +54,13 @@ export async function fetchAresCompany(ico: string): Promise<CompanyData> {
   }
 
   if (res.status === 404) throw new AresNotFoundError(ico)
-  if (!res.ok) throw new Error(`ARES returned ${res.status}`)
+  if (!res.ok) throw new Error(`ARES returned ${res.status} for IČO ${ico}`)
 
-  const raw = await res.json()
-  return mapAresResponse(raw)
+  try {
+    const raw = await res.json()
+    return mapAresResponse(raw)
+  }
+  catch (error) {
+    throw new Error(`ARES returned invalid JSON for IČO ${ico}: ${(error as Error).message}`)
+  }
 }

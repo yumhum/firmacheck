@@ -103,7 +103,9 @@ saved_companies (
 ## 6. External APIs
 
 ### ARES
-- Public REST register. Endpoint and exact response shape to be confirmed against official docs at implementation time (`https://ares.gov.cz/...` ekonomické subjekty by IČO).
+- Endpoint: `GET https://ares.gov.cz/ekonomicke-subjekty-v-be/rest/ekonomicke-subjekty/{ico}`, header `Accept: application/json`. A 404 / fetch error → status `not_found`. (Confirmed from prior project `yumhum/fz` `composables/useAres.js`.)
+- Confirmed response fields (from `fz`): `ico`, `obchodniJmeno`, `dic` (optional), and `sidlo` address object with `nazevUlice`, `cisloDomovni`, `cisloOrientacni`, `nazevObce`, `psc`, and **`sidlo.textovaAdresa`** (full formatted address string — use as the Mapy.cz geocode query input).
+- Additional fields required by the assignment but not used in `fz` — **právní forma, datum vzniku, stav subjektu** — exist in the same response (`pravniForma`, `datumVzniku`, plus a registration/status section). Confirm exact field names + the legal-form code→label mapping against official ARES docs at implementation time.
 - Map at least: IČO, obchodní název, právní forma, datum vzniku, stav subjektu, adresa sídla, DIČ (if present).
 
 ### Mapy.cz

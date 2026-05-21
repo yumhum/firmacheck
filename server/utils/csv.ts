@@ -14,7 +14,7 @@ const HEADER = [
 ]
 
 function escape(value: string): string {
-  if (value.includes(DELIMITER) || value.includes('"') || value.includes('\n')) {
+  if (value.includes(DELIMITER) || value.includes('"') || value.includes('\n') || value.includes('\r')) {
     return `"${value.replace(/"/g, '""')}"`
   }
   return value

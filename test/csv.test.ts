@@ -44,6 +44,25 @@ describe('buildCsv', () => {
     const tricky = buildCsv([{ ...rows[0]!, name: 'Firma; s.r.o.' }])
     expect(tricky).toContain('"Firma; s.r.o."')
   })
+
+  it('escapes double quotes by doubling them', () => {
+    const q = buildCsv([{ ...rows[0]!, name: 'He said "hi"' }])
+    expect(q).toContain('"He said ""hi"""')
+  })
+
+  it('leaves coordinates empty when lat/lon are null', () => {
+    const noGeo = buildCsv([{ ...rows[0]!, lat: null, lon: null }])
+    const dataLine = noGeo.replace(/^﻿/, '').split('\n')[1]!
+    expect(dataLine.endsWith(';')).toBe(true) // souradnice column is empty
+  })
+
+  it('renders an empty datum_vzniku when foundedDate is null', () => {
+    const noDate = buildCsv([{ ...rows[0]!, foundedDate: null }])
+    expect(noDate).toContain('Aktivní') // sanity: row still present
+    const dataLine = noDate.replace(/^﻿/, '').split('\n')[1]!
+    // datum_vzniku is the 6th column (index 5) — should be empty between two semicolons
+    expect(dataLine.split(';')[5]).toBe('')
+  })
 })
 
 describe('toJson', () => {

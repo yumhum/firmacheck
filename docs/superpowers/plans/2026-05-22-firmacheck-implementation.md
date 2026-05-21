@@ -1104,11 +1104,15 @@ import { buildCsv, toJson } from '../../utils/csv'
 import { useDb } from '../../utils/db'
 
 export default defineEventHandler((event) => {
-  const format = (getQuery(event).format as string) === 'json' ? 'json' : 'csv'
+  const query = getQuery(event)
+  const format = (query.format as string) === 'json' ? 'json' : 'csv'
+  // Optional ?ico= filter exports a single selected company (bonus).
+  const ico = typeof query.ico === 'string' && /^\d{8}$/.test(query.ico) ? query.ico : null
 
-  const rows = useDb()
-    .prepare('SELECT * FROM saved_companies ORDER BY saved_at DESC')
-    .all() as Array<Record<string, unknown>>
+  const rows = (ico
+    ? useDb().prepare('SELECT * FROM saved_companies WHERE ico = ?').all(ico)
+    : useDb().prepare('SELECT * FROM saved_companies ORDER BY saved_at DESC').all()
+  ) as Array<Record<string, unknown>>
 
   const companies: SavedCompany[] = rows.map(r => ({
     ico: r.ico as string,
@@ -1126,14 +1130,16 @@ export default defineEventHandler((event) => {
     lastVerifiedAt: r.last_verified_at as string,
   }))
 
+  const base = ico ? `firmacheck-${ico}` : 'firmacheck-export'
+
   if (format === 'json') {
     setHeader(event, 'Content-Type', 'application/json; charset=utf-8')
-    setHeader(event, 'Content-Disposition', 'attachment; filename="firmacheck-export.json"')
+    setHeader(event, 'Content-Disposition', `attachment; filename="${base}.json"`)
     return toJson(companies)
   }
 
   setHeader(event, 'Content-Type', 'text/csv; charset=utf-8')
-  setHeader(event, 'Content-Disposition', 'attachment; filename="firmacheck-export.csv"')
+  setHeader(event, 'Content-Disposition', `attachment; filename="${base}.csv"`)
   return buildCsv(companies)
 })
 ```
@@ -1145,8 +1151,11 @@ Run (save a company first if the DB is empty, using the POST from Task 11):
 curl -s -D - "http://localhost:3000/api/companies/export?format=csv" -o /tmp/export.csv | grep -i 'content-disposition'
 head -2 /tmp/export.csv
 curl -s -D - "http://localhost:3000/api/companies/export?format=json" -o /dev/null | grep -i 'content-type'
+# Single-company export (bonus)
+curl -s -D - "http://localhost:3000/api/companies/export?format=csv&ico=02823519" -o /tmp/one.csv | grep -i 'content-disposition'
+wc -l < /tmp/one.csv
 ```
-Expected: CSV download has `Content-Disposition: attachment; filename="firmacheck-export.csv"`, the header row begins with `ico;obchodni_nazev;...`, and the JSON request reports `application/json`.
+Expected: the full CSV download has `Content-Disposition: attachment; filename="firmacheck-export.csv"`, the header row begins with `ico;obchodni_nazev;...`, the JSON request reports `application/json`, and the single-company export reports `filename="firmacheck-02823519.csv"` with exactly 2 lines (header + one row).
 
 - [ ] **Step 3: Commit**
 
@@ -1579,6 +1588,10 @@ function download(format: 'csv' | 'json') {
   window.location.href = `/api/companies/export?format=${format}`
 }
 
+function downloadOne(ico: string, format: 'csv' | 'json') {
+  window.location.href = `/api/companies/export?format=${format}&ico=${ico}`
+}
+
 async function copyJson() {
   await navigator.clipboard.writeText(JSON.stringify(props.companies, null, 2))
   toast.add({ title: 'JSON zkopírován do schránky', color: 'success' })
@@ -1632,13 +1645,28 @@ function formatDate(iso: string) {
             Ověřeno: {{ formatDate(c.lastVerifiedAt) }}
           </p>
         </button>
-        <UButton
-          color="error"
-          variant="ghost"
-          icon="i-lucide-trash-2"
-          aria-label="Odebrat firmu"
-          @click="$emit('remove', c.ico)"
-        />
+        <div class="flex items-center gap-1">
+          <UDropdownMenu
+            :items="[
+              { label: 'Export CSV', icon: 'i-lucide-download', onSelect: () => downloadOne(c.ico, 'csv') },
+              { label: 'Export JSON', icon: 'i-lucide-download', onSelect: () => downloadOne(c.ico, 'json') },
+            ]"
+          >
+            <UButton
+              color="neutral"
+              variant="ghost"
+              icon="i-lucide-ellipsis-vertical"
+              aria-label="Export firmy"
+            />
+          </UDropdownMenu>
+          <UButton
+            color="error"
+            variant="ghost"
+            icon="i-lucide-trash-2"
+            aria-label="Odebrat firmu"
+            @click="$emit('remove', c.ico)"
+          />
+        </div>
       </li>
     </ul>
   </UCard>
@@ -1647,7 +1675,7 @@ function formatDate(iso: string) {
 
 - [ ] **Step 2: Verify the full UI flow**
 
-Run `pnpm dev`. With no saved companies, the empty-state illustration shows (placeholder until Task 18 adds the image — if the asset is missing the build will error, so create a 1x1 placeholder now if needed: `mkdir -p app/assets/img && curl -s -o app/assets/img/empty-state.png https://placehold.co/400x300/png`). Verify a company, click "Uložit firmu" → it appears in the list. Click the row → detail reopens. Click trash → it disappears. Click CSV/JSON → files download. Click "Kopírovat JSON" → toast appears.
+Run `pnpm dev`. With no saved companies, the empty-state illustration shows (placeholder until Task 18 adds the image — if the asset is missing the build will error, so create a 1x1 placeholder now if needed: `mkdir -p app/assets/img && curl -s -o app/assets/img/empty-state.png https://placehold.co/400x300/png`). Verify a company, click "Uložit firmu" → it appears in the list. Click the row → detail reopens. Click trash → it disappears. Click the header CSV/JSON → full-list files download. Open a row's ⋮ menu → "Export CSV"/"Export JSON" download just that company. Click "Kopírovat JSON" → toast appears.
 
 - [ ] **Step 3: Commit**
 
@@ -1863,4 +1891,4 @@ Run through `docs/assignment.md` "Povinné technické požadavky" and confirm ea
 - [ ] Required output fields: IČO, name, legal form, founding date, status, address, DIČ — (Task 6, 15).
 - [ ] Name match (match/partial/mismatch) — (Tasks 4, 15).
 - [ ] Coordinates + "open in maps" link — (Task 15).
-- [ ] Bonus: JSON export + copy-to-clipboard + empty-list handling — (Tasks 12, 17).
+- [ ] Bonus: JSON export + copy-to-clipboard + empty-list handling + per-company export — (Tasks 12, 17).

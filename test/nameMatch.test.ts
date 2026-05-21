@@ -22,4 +22,8 @@ describe('matchName', () => {
   it('returns mismatch for empty input', () => {
     expect(matchName('', 'ideabox s.r.o.')).toBe('mismatch')
   })
+
+  it('returns mismatch when the official name is only a legal suffix', () => {
+    expect(matchName('ideabox', 's.r.o.')).toBe('mismatch')
+  })
 })

@@ -17,7 +17,7 @@ function normalize(name: string): string {
 export function matchName(input: string, official: string): NameMatch {
   const a = normalize(input)
   const b = normalize(official)
-  if (!a) return 'mismatch'
+  if (!a || !b) return 'mismatch'
   if (a === b) return 'match'
   if (a.includes(b) || b.includes(a)) return 'partial'
   return 'mismatch'

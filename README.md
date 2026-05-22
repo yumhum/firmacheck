@@ -22,15 +22,15 @@ Webová aplikace pro rychlé ověření základních údajů o české firmě po
 
 ## Technologický stack
 
-| Vrstva | Technologie |
-|---|---|
-| Framework | **Nuxt 4** (Vue 3) + Nitro server routes |
-| UI | **Nuxt UI** (Tailwind v4) |
-| Validace | **Zod** (sdílené schéma klient + server) |
+| Vrstva           | Technologie                                           |
+| ---------------- | ----------------------------------------------------- |
+| Framework        | **Nuxt 4** (Vue 3) + Nitro server routes              |
+| UI               | **Nuxt UI** (Tailwind v4)                             |
+| Validace         | **Zod** (sdílené schéma klient + server)              |
 | Databáze / cache | **better-sqlite3** (server-side, perzistentní soubor) |
-| Mapa | **Leaflet** + dlaždice **Mapy.cz** |
-| Testy | **Vitest** |
-| Nasazení | **Docker** přes **Coolify** (vlastní server) |
+| Mapa             | **Leaflet** + dlaždice **Mapy.cz**                    |
+| Testy            | **Vitest**                                            |
+| Nasazení         | **Docker** přes **Coolify** (vlastní server)          |
 
 ---
 
@@ -44,21 +44,28 @@ Webová aplikace pro rychlé ověření základních údajů o české firmě po
 ## Lokální spuštění
 
 1. Naklonujte repozitář a nainstalujte závislosti (používá se **pnpm**):
+
    ```bash
    pnpm install
    ```
+
 2. Zkopírujte `.env.example` na `.env` a doplňte API klíč z [developer.mapy.com](https://developer.mapy.com):
+
    ```bash
    NUXT_MAPY_API_KEY=vas_klic
    NUXT_PUBLIC_MAPY_API_KEY=vas_klic
    NUXT_DB_PATH=./data/firmacheck.db
    ```
+
    > Mapy.com poskytuje **jeden** API klíč. Vyplňte stejnou hodnotu do obou proměnných: `NUXT_MAPY_API_KEY` se používá server-side pro geocoding (skrytý), `NUXT_PUBLIC_MAPY_API_KEY` se používá v prohlížeči pro mapové dlaždice (klíč lze v dashboardu Mapy.com omezit na doménu).
 3. Spusťte vývojový server:
+
    ```bash
    pnpm dev    # http://localhost:3000
    ```
+
 4. Testy:
+
    ```bash
    pnpm test
    ```
@@ -106,14 +113,17 @@ IČO se validuje nejen na 8 číslic, ale i kontrolním součtem mod-11 (`shared
 Ilustrace **„babička s lupou za záclonou"** (`app/assets/img/babicka.webp`) — vtipná postavička české zvědavé sousedky, která „kontroluje" firmy stejně jako kouká po sousedech. Použitá v hero sekci a v prázdném stavu seznamu uložených firem, aby aplikace působila přívětivě a měla osobitý český nádech. Vygenerováno v **ChatGPT**, exportováno jako PNG s průhledným pozadím a zoptimalizováno do WebP (~77 kB).
 
 **Použitý prompt:**
+
 > Vtipná, chytrá plochá vektorová ilustrace klasické české babičky jako zvědavé „kontrolorky firem". Starší žena s růžovými tvářemi vykukuje zpoza bílé krajkové záclony v okně, jedno oko přitisknuté k velké lupě — oko je přes čočku žertovně zvětšené. Výraz laskavý, ale komicky podezíravý: zvednuté obočí, šibalský úsměv, jako že nic nepřehlédne. Má šátek uvázaný pod bradou a svetřík s decentními akcenty v českých národních barvách (červená, bílá, modrá). Na okenním parapetu kvetoucí muškát v květináči. Moderní přátelský kreslený styl, oblé tvary, jemná struktura papíru, měkké čisté světlo, omezená paleta červená/bílá/modrá a teplé neutrální tóny. Transparentní pozadí. Formát 1:1, vysoké rozlišení.
 
 ### Ukázky promptů z vývoje (Claude Code)
 
 1. **Architektura a výklad zadání:**
+
    > „Studuj assignment.md slovo od slova. Pojďme nejdřív probrat tech stack a architekturu. Je tam doporučený stack, ale taky se píše, že appka musí mít nasazené demo na Vercel nebo Netlify — já bych to ale radši hostoval kompletně na vlastním serveru. Jak to čteš?"
 
 2. **Využití existujícího kódu jako reference:**
+
    > „Na mém GitHubu je projekt ‚fz', kde mám implementaci ARES. Ale je to starý projekt, takže pokud se k němu nedostaneš, nevadí — vždy raději použij oficiální dokumentaci."
 
 3. **Doladění UI:**
@@ -151,4 +161,4 @@ Ilustrace **„babička s lupou za záclonou"** (`app/assets/img/babicka.webp`) 
 
 ## Čas strávený
 
-_Přibližně **[doplň]** hodin._
+_Přibližně 2 hodiny._

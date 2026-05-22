@@ -61,7 +61,14 @@ const isSaved = computed(() =>
 
 <template>
   <UContainer class="py-8 space-y-8">
-    <div class="text-center space-y-2">
+    <div class="text-center space-y-3">
+      <img
+        src="~/assets/img/babicka.webp"
+        alt="Babička s lupou kontroluje české firmy"
+        width="640"
+        height="640"
+        class="mx-auto h-40 w-40 object-contain"
+      >
       <h1 class="text-3xl font-bold">
         FirmaCheck
       </h1>

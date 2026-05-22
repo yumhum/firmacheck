@@ -58,7 +58,7 @@ function formatDate(iso: string) {
     </template>
 
     <div v-if="!companies.length" class="text-center py-8 space-y-3">
-      <img src="~/assets/img/empty-state.png" alt="Žádné uložené firmy" class="mx-auto h-40 w-auto opacity-90">
+      <img src="~/assets/img/babicka.webp" alt="Žádné uložené firmy" class="mx-auto h-40 w-auto opacity-90">
       <p class="text-(--ui-text-muted)">
         Zatím nemáte uložené žádné firmy. Ověřte firmu a uložte ji.
       </p>

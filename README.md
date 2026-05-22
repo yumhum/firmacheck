@@ -2,7 +2,7 @@
 
 Webová aplikace pro rychlé ověření základních údajů o české firmě podle **IČO**. Data se načítají z rejstříku **ARES**, sídlo firmy se zobrazí na mapě (**Mapy.cz**), odpovědi se ukládají do jednoduché **SQLite cache**, ověřené firmy lze uložit do seznamu a exportovat do **CSV/JSON**.
 
-**🔗 Živé demo:** _zatím nenasazeno — doplním URL z Coolify po nasazení._
+**🔗 Živé demo:** <https://h1mz3n94zwl5pkvq5j2i73gu.janwunsch.cz>
 
 ![Babička z FirmaCheck](app/assets/img/babicka.webp)
 
@@ -58,6 +58,7 @@ Webová aplikace pro rychlé ověření základních údajů o české firmě po
    ```
 
    > Mapy.com poskytuje **jeden** API klíč. Vyplňte stejnou hodnotu do obou proměnných: `NUXT_MAPY_API_KEY` se používá server-side pro geocoding (skrytý), `NUXT_PUBLIC_MAPY_API_KEY` se používá v prohlížeči pro mapové dlaždice (klíč lze v dashboardu Mapy.com omezit na doménu).
+
 3. Spusťte vývojový server:
 
    ```bash

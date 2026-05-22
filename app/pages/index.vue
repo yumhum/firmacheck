@@ -53,6 +53,10 @@ function onReopen(company: SavedCompany) {
 }
 
 await loadSaved()
+
+const isSaved = computed(() =>
+  !!result.value?.company && saved.value.some(c => c.ico === result.value!.company!.ico),
+)
 </script>
 
 <template>
@@ -71,6 +75,7 @@ await loadSaved()
     <CompanyDetail
       v-if="result"
       :result="result"
+      :is-saved="isSaved"
       @save="onSave(result)"
     />
 

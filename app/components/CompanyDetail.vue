@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { VerifyResult } from '~~/shared/types'
 
-const props = defineProps<{ result: VerifyResult }>()
+const props = defineProps<{ result: VerifyResult, isSaved?: boolean }>()
 defineEmits<{ save: [] }>()
 
 const statusBadge = computed(() => {
@@ -98,8 +98,21 @@ const mapyLink = computed(() =>
       </div>
 
       <div class="flex justify-end">
-        <UButton icon="i-lucide-bookmark" @click="$emit('save')">
+        <UButton
+          v-if="!isSaved"
+          icon="i-lucide-bookmark"
+          @click="$emit('save')"
+        >
           Uložit firmu
+        </UButton>
+        <UButton
+          v-else
+          icon="i-lucide-check"
+          color="success"
+          variant="subtle"
+          disabled
+        >
+          Uloženo
         </UButton>
       </div>
     </div>

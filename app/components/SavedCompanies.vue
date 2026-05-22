@@ -6,6 +6,18 @@ defineEmits<{ reopen: [company: SavedCompany], remove: [ico: string] }>()
 
 const toast = useToast()
 
+const page = ref(1)
+const PER_PAGE = 5
+const paginated = computed(() => {
+  const start = (page.value - 1) * PER_PAGE
+  return props.companies.slice(start, start + PER_PAGE)
+})
+// Keep the page in range when items are removed.
+watch(() => props.companies.length, (len) => {
+  const maxPage = Math.max(1, Math.ceil(len / PER_PAGE))
+  if (page.value > maxPage) page.value = maxPage
+})
+
 function download(format: 'csv' | 'json') {
   window.location.href = `/api/companies/export?format=${format}`
 }
@@ -54,7 +66,7 @@ function formatDate(iso: string) {
 
     <ul v-else class="divide-y divide-(--ui-border)">
       <li
-        v-for="c in companies"
+        v-for="c in paginated"
         :key="c.ico"
         class="flex items-center justify-between gap-4 py-3"
       >
@@ -91,5 +103,13 @@ function formatDate(iso: string) {
         </div>
       </li>
     </ul>
+
+    <div v-if="companies.length > PER_PAGE" class="flex justify-center pt-4">
+      <UPagination
+        v-model:page="page"
+        :total="companies.length"
+        :items-per-page="PER_PAGE"
+      />
+    </div>
   </UCard>
 </template>
